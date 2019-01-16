@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Reproducibility, Workflow, Version Control"
-author: "Student Name"
+author: "Caroline Watson"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -30,22 +30,22 @@ The completed exercise is due on Thursday, 17 January, 2018 before class begins.
 ### Question
 Why are reproducible practices becoming the norm in data analytics?
 
-> Answer: 
+> Answer: Reproducible practices are becoming the norm in data analytics because it is important to be able to share your code with others or your future self so that you can understand what was done previously.
 
 ### Question
 What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: My previous experiences with data analytics and R is the Applied Statistics for the Environmental Sciences. This was a statistics course, so my experience in R was with the weekly lab assignments and learning how to code or use specific statistical functions during lecture. I don't have any experience with Git.
 
 ### Question
 Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I mainly feel confident about using R (to a certain extent). I feel familiar enough with R that I know how it works.
 
 ### Question
 Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I feel a bit apprehensive about the problems that we could run into while using R since this is different from the statistics class I took last semester. I also am not sure I fully understand the connection between R, GitHub, and my files and how to update each respectively, but I'm hoping that will come with time/practice.
 
 
 ## 2) GitHub
@@ -53,6 +53,6 @@ Are there any components of the course about which you feel apprehensive?
 ### Your Repository
 Provide a link below to your course repository in GitHub. Make sure you have pulled all recent changes from the course repository (https://github.com/KateriSalk/Environmental_Data_Analytics) and that you have updated your course README file. 
 
-> Answer: 
+> Answer: https://github.com/cwatson1013/Environmental_Data_Analytics
 
 
