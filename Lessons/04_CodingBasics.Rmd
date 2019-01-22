@@ -28,7 +28,7 @@ R treats objects differently based on their characteristics. For more informatio
 
 Define what each new piece of syntax does below (i.e., fill in blank comments). Note that the R chunk has been divided into sections (# at beginning of line, ---- at end)
 ```{r}
-# Vectors ----
+# Vectors ---- # this can divide chunks into sections, but will not show up in outline
 vector1 <- c(1,2,5.3,6,-2,4) # numeric vector
 vector1
 vector2 <- c("one","two","three") # character vector
@@ -36,58 +36,58 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3] # gives you 3rd item in vector 1; I would like vector 1 and for R to give me the 3rd element in vector1 (this is called matrix subsetting where you call out the element with the square brackets)
 
 # Matrices ----
-matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
+matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # create a matrix with 5 rows, 4 columns, with numbers 1 through 20; numbers are put in vertically, then horizontally; default will automatically be by column, unless we say byrow=true
 matrix1
-matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
+matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) # same as matrix 1, but counts horizontally first, then vertically
 matrix2
 matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma continues the line
                   dimnames = list(c("uno", "dos", "tres", "cuatro", "cinco"), 
-                                  c("un", "deux", "trois", "cat"))) #
+                                  c("un", "deux", "trois", "cat"))) #named the rows first, then named the columns; dimnames = dimension names
 matrix3
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] #in matrix 1, give the 4th column
+matrix1[ , 3] #matrix 1, 3rd row of all columns
+matrix1[c(12, 14)] #calling up data points in position 12 and 14
+matrix1[c(12:14)] #calling up data points in position 12 through 14
+matrix1[2:4, 1:3] #calling up rows 2 through 4 and columns 1 through 3
 
-cells <- c(1, 26, 24, 68)
-rnames <- c("R1", "R2")
-cnames <- c("C1", "C2") 
+cells <- c(1, 26, 24, 68) #create 4 cells
+rnames <- c("R1", "R2") #create an element called rnames
+cnames <- c("C1", "C2") #create an element called cnames
 matrix4 <- matrix(cells, nrow = 2, ncol = 2, byrow = TRUE,
-  dimnames = list(rnames, cnames)) # 
+  dimnames = list(rnames, cnames)) #create a matrix with 2 rows, 2 columns, byrow=TRUE, dimension names are rnames and cnames
 matrix4
 
 # Lists ---- 
-list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3); list1
-list1[[2]]
+list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3); list1 #telling R that the name of the list should be Maria, use numbers from vector 1, and matrix 1, and age = 5.3; the ; lets you run two lines of code with one click as opposed to retyping list 1; in this command it will show you the list
+list1[[2]] #will give you the second element in the list; use [[]] in list 
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+d <- c(1, 2, 3, 4) # What type of vector? This is a numeric vector
+e <- c("red", "white", "red", NA) # What type of vector? This is a character vector
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? This is a logical vector
+dataframe1 <- data.frame(d,e,f) #combine the vectors d,e,f into one dataframe
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) #change the names of the dataframe and view the dataframe after the change 
 
-dataframe1[1:2] # 
-dataframe1[c("ID","Passed")] # 
-dataframe1$Color # 
+dataframe1[1:2] #show columns 1 through 2; interpretting differently because it's a dataframe and not a matrix 
+dataframe1[c("ID","Passed")] # pulling up columns based on the name
+dataframe1$Color # $ means you want that column name
 
 ```
 QUESTION: How do the different types of data appear in the Environment tab?
 
-> ANSWER: 
+> ANSWER: Vectors appear in the values section and dataframes, lists, and matrices appear in the data section.
 
 QUESTION: In the R chunk below, write "dataframe1$". Press `tab` after you type the dollar sign. What happens?
 
-> ANSWER: 
+> ANSWER: You see all the column names.
 
 QUESTION: What happens when a comment in R is followed by "----"?
 
-> ANSWER:
+> ANSWER: It creates a chunk that you can minimize/collapse in the code. This does not show up in the outline though.
 
 Advanced: Sequential section headers can be created by using at least four -, =, and # characters.
 
@@ -129,12 +129,12 @@ library(dplyr)
 library(ggplot2)
 
 # Some packages are umbrellas under which other packages are loaded
-#install.packages(tidyverse)
+#install.packages("tidyverse")
 library(tidyverse)
 ```
 What happens in the console when you load a package?
 
-> ANSWER: 
+> ANSWER: Masked objects 'filter' and 'lag' because these functions are also in a different package; if you want to use one package over the other, you're going to want to load one package over the other
 
 ## FUNCTIONS
 
@@ -144,7 +144,7 @@ Writing a function is like writing a recipe. Your function will need a recipe na
 ```{r}
 functionname <- function(){
   
-}
+} #name of our recipe; inside () we put in our ingredients; {} is where the steps go
 ```
 
 A single ingredient recipe: 
@@ -153,13 +153,13 @@ A single ingredient recipe:
 recipe1 <- function(x){
   mix <- x*2
   return(mix)
-}
+} #x is our ingrediant and what are we going to do with x?
 
 # Bake the recipe
-simplemeal <- recipe1(5)
+simplemeal <- recipe1(5) #use recipe 1 and apply that to ingrdiant 5
 
 # Serve the recipe
-simplemeal
+simplemeal #need to bake the recipe
 ```
 
 Two single ingredient recipes, baked at the same time: 
@@ -171,9 +171,10 @@ recipe2 <- function(x){
               mix2 = mix2))
 }
 
-doublesimplemeal <- recipe2(6)
-doublesimplemeal
+doublesimplemeal <- recipe2(6) #baking the recipe
+doublesimplemeal #serving the recipe
 ```
+
 Two double ingredient recipes, baked at the same time: 
 ```{r}
 recipe3 <- function(x, f){
@@ -183,10 +184,11 @@ recipe3 <- function(x, f){
               mix2 = mix2))
 }
 
-doublecomplexmeal <- recipe3(x = 5, f = 2)
+doublecomplexmeal <- recipe3(x = 5, f = 2) #make a meal, use recipe 3, and specify which ingrediants are there; can also take out x and f, and just put in 5, 2, but it will take them in the order you put them in the recipe
 doublecomplexmeal
 doublecomplexmeal$mix1
 ```
+
 Make a recipe based on the ingredients you have
 ```{r}
 recipe4 <- function(x) {
@@ -197,7 +199,9 @@ recipe4 <- function(x) {
     x/2
   }
 }
+#if x < 3, then multiply x by 2; if x isn't less than 3, then I want you to divide x by 2
 
+#combining if else statements in one function
 recipe5 <- function(x) {
   if(x < 3) {
     x*2
@@ -213,10 +217,12 @@ meal <- recipe4(4); meal
 meal2 <- recipe4(2); meal2
 meal3 <- recipe5(3); meal3
 
+#another way to do if/else statements
 recipe6 <- function(x){
   ifelse(x<3, x*2, x/2)
   
 }
+
 
 meal4 <- recipe6(4); meal4
 meal5 <- recipe6(2); meal5
