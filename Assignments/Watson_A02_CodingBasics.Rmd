@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Caroline Watson"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -73,6 +73,7 @@ mean(one_to_100_by_4) > median(one_to_100_by_4)
 
 8. Label the columns of your data frame with informative titles.
 
+#5. & 6. 
 ```{r}
 #creating a vector with names of students
 names_students <- c("Jane", "John", "Anna", "Caroline") #character vector
@@ -87,11 +88,15 @@ passed_test <- test_scores > 50  #logical vector
 passed_test
 ```
 
+#7. 
 ```{r}
 #creating a data frame with all of the vectors above
 dataframe_vectors <- data.frame(names_students, test_scores, passed_test)
 dataframe_vectors
+```
 
+#8.
+```{r}
 #renaming column headings for the data frame
 names(dataframe_vectors) <- c("Names", "Test Score", "Passed")
 dataframe_vectors
@@ -105,31 +110,37 @@ dataframe_vectors
 
 11. Apply your function to the vector with test scores that you created in number 5. 
 
+#10.
 ```{r}
-#creating a function with an if/else statement
+#creating a function with an 'if' and 'else' statement
 passed_test_function <- function(passed_test){
   if(passed_test > 50) {
-    return("True")
+    return("TRUE")
   }
 else {
-  return("False")
+  return("FALSE")
 }
   }
 
 
-passed_test_function <- function(x){
-  if(x > 50) {
-    return("True")
-  }
-else {
-  return("False")
+#creating a function with an 'ifelse' statement
+passed_test_function2 <- function(passed_test){
+  ifelse(passed_test > 50, "TRUE", "FALSE")
 }
-}
+```
 
-pssed_test1 <- passed_test_function(passed_test)
+#11. 
+```{r}
+#testing the function to see if it works
+passed_test_function(60)
+passed_test_function(40)
+
+#testing the function with an 'ifelse' statement to see if it works
+passed_test_function2(60)
+passed_test_function2(40)
 
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> ANSWER: 
+> ANSWER: From the above code we can see that 'if' and 'else' and 'ifelse' both worked to determine whether the statement was true or false. 
