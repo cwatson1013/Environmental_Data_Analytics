@@ -138,7 +138,6 @@ passed_test_function(40)
 #testing the function with an 'ifelse' statement to see if it works
 passed_test_function2(60)
 passed_test_function2(40)
-
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
