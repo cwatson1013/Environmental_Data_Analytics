@@ -80,11 +80,11 @@ names_students <- c("Jane", "John", "Anna", "Caroline") #character vector
 names_students
 
 #creating a vector with test scores out of a total of 100 points
-test_scores <- c("85", "90", "60", "70") #numeric vector
+test_scores <- c("85", "90", "60", "40") #numeric vector
 test_scores
 
 #did students pass the test with passing grade of 50? 
-passed_test <- test_scores > 50  #logical vector
+passed_test <- test_scores >= 50  #logical vector
 passed_test
 ```
 
@@ -112,34 +112,20 @@ dataframe_vectors
 
 #10.
 ```{r}
-#creating a function with an 'if' and 'else' statement
-passed_test_function <- function(passed_test){
-  if(passed_test > 50) {
-    return("TRUE")
-  }
-else {
-  return("FALSE")
-}
-  }
-
-
 #creating a function with an 'ifelse' statement
-passed_test_function2 <- function(passed_test){
-  ifelse(passed_test > 50, "TRUE", "FALSE")
+passed_test_function <- function(passed_test){
+  ifelse(passed_test >= 50, "TRUE", "FALSE")
 }
+
 ```
 
 #11. 
 ```{r}
-#testing the function to see if it works
-passed_test_function(60)
-passed_test_function(40)
-
 #testing the function with an 'ifelse' statement to see if it works
-passed_test_function2(60)
-passed_test_function2(40)
+passed_test_function(test_scores)
+
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> ANSWER: From the above code we can see that 'if' and 'else' and 'ifelse' both worked to determine whether the statement was true or false. 
+> ANSWER: The 'ifelse' statement is the correct option that worked for the function. This is because the 'ifelse' statement can be used with a vector, where as the 'if' and 'else' statement can only be used with one input as opposed to a vector, which has multiple inputs. 
