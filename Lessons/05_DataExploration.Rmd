@@ -68,13 +68,13 @@ Note: In the Knit menu in the Editor, you will need to specify whether your knit
 #read.csv("/Users/katerisalk/Documents/Duke/Courses/Environmental_Data_Analytics/Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 
 # Relative file path (friendly for users regardless of machine)
-USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv") # ./ tells R that it needs to go to one file below the working directory file
 
 # What happens if we don't assign a name to our imported dataset?
-#read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+#read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv") # it doesn't save it as a data/dataframe and will put it into the console, but you won't be able to "save" it or see it again
 
 # Another option is to choose with your browser
-# read.csv(file.choose())
+ #read.csv(file.choose()) # don't know what you are looking for; not reproducible; if you want to use this, you'll want to leave a comment saying what you imported
 
 # To import .txt files, use read.table rather than read.csv
 #read.table()
@@ -84,7 +84,7 @@ USGS.flow.data <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 ## EXPLORE YOUR DATASET
 
 Take a moment to read through the README file associated with the USGS dataset on discharge at the Eno River. Where can you find this file? How does the placement and information found in this file relate to the best practices for reproducible data analysis?
-> ANSWER: 
+> ANSWER: This file is located in the Raw file in the Data file of the Env_Data_Analytics file. The placement and information found in this file relates to best practices because it is descriptive.
 
 ```{r}
 View(USGS.flow.data)
@@ -101,14 +101,14 @@ colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",
                               "gage.height.max", "gage.height.max.approval", 
                               "gage.height.min", "gage.height.min.approval", 
                               "gage.height.mean", "gage.height.mean.approval")
-str(USGS.flow.data)
-dim(USGS.flow.data)
-length(USGS.flow.data)
+str(USGS.flow.data) # means structure
+dim(USGS.flow.data) # means dimensions; will give you the dimensions of the data frame (number of rows and columns)
+length(USGS.flow.data) # length gives number of columns
 
-head(USGS.flow.data)
-head(USGS.flow.data, 10)
-tail(USGS.flow.data, 5)
-USGS.flow.data[30000:30005, c(3, 8, 14)]
+head(USGS.flow.data) #will give the first couple rows of the 15 columns
+head(USGS.flow.data, 10) #will give you the 10 first rows of data frame
+tail(USGS.flow.data, 5) #will give the tail end of the data
+USGS.flow.data[30000:30005, c(3, 8, 14)] #can matrix your data to see rows 30000 to 30005 and say you want column 3, 8, and 14
 
 class(USGS.flow.data$datetime)
 class(USGS.flow.data$discharge.mean)
@@ -116,12 +116,13 @@ class(USGS.flow.data$gage.height.mean)
 
 summary(USGS.flow.data)
 summary(USGS.flow.data$discharge.mean)
+summary(USGS.flow.data$discharge.mean.approval)
 summary(USGS.flow.data$gage.height.mean)
 
 ```
 
 What happened to blank cells in the spreadsheet when they were imported into R?
-> ANSWER: 
+> ANSWER: They became 'NAs'
 
 ## TIPS AND TRICKS: SPREADSHEETS
 
