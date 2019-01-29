@@ -32,4 +32,9 @@ OR
 `git merge upstream/master`
 
 6. If a conflict arises during merge, update the file(s) to your liking, stage them and commit them.
+<<<<<<< HEAD
 >>>>>>> dd25020246d174b1c016cbce8e2eacb7e2cbc8bd
+=======
+
+*testing merge error with Taylor*
+>>>>>>> 4d1d9dea435d466d83ea27c9fa2ca15256399596
