@@ -1,0 +1,149 @@
+---
+title: "Assignment 4: Data Wrangling"
+author: "Caroline Watson"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+## OVERVIEW
+
+This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) on data wrangling. 
+
+## Directions
+1. Change "Student Name" on line 3 (above) with your name.
+2. Use the lesson as a guide. It contains code that can be modified to complete the assignment.
+3. Work through the steps, **creating code and output** that fulfill each instruction.
+4. Be sure to **answer the questions** in this assignment document.
+Space for your answers is provided in this document and is indicated by the ">" character.
+If you need a second paragraph be sure to start the first line with ">".
+You should notice that the answer is highlighted in green by RStudio. 
+6. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+You will need to have the correct software installed to do this (see Software Installation Guide)
+Press the `Knit` button in the RStudio scripting panel.
+This will save the PDF output in your Assignments folder.
+8. After Knitting, please submit the completed exercise (PDF file) to the dropbox in Sakai. Please add your last name into the file name (e.g., "Salk_A04_DataWrangling.pdf") prior to submission.
+
+The completed exercise is due on Thursday, 7 February, 2019 before class begins.
+
+## Set up your session 
+1. Check your working directory, load the `tidyverse` package, and upload all four raw data files associated with the EPA Air dataset. See the README file for the EPA air datasets for more information (especially if you have not worked with air quality data previously). 
+
+2. Generate a few lines of code to get to know your datasets (basic data summaries, etc.).
+
+```{r}
+#1
+#viewing working dirctory
+getwd()
+
+#loading tidyvere
+library(tidyverse)
+
+#uploading raw data files for ozone and PM 2.5
+EPA_PM25_2017 <- read.csv("Data/Raw/EPAair_PM25_NC2017_raw.csv")
+EPA_PM25_2018 <- read.csv("Data/Raw/EPAair_PM25_NC2018_raw.csv")
+EPA_O3_2017 <- read.csv("Data/Raw/EPAair_O3_NC2017_raw.csv")
+EPA_O3_2018 <- read.csv("Data/Raw/EPAair_O3_NC2018_raw.csv")
+
+#2
+
+#summary of dataset for PM2.5 in 2017
+head(EPA_PM25_2017)
+summary(EPA_PM25_2017)
+colnames(EPA_PM25_2017)
+dim(EPA_PM25_2017)
+
+#summary of dataset for PM2.5 in 2018
+head(EPA_PM25_2018)
+summary(EPA_PM25_2018)
+colnames(EPA_PM25_2018)
+dim(EPA_PM25_2018)
+
+#summary of dataset for O3 in 2017
+head(EPA_O3_2017)
+summary(EPA_O3_2017)
+colnames(EPA_O3_2017)
+dim(EPA_O3_2017)
+
+#summary of dataset for O3 in 2018
+head(EPA_O3_2018)
+summary(EPA_O3_2018)
+colnames(EPA_O3_2018)
+dim(EPA_O3_2018)
+
+```
+
+## Wrangle individual datasets to create processed files.
+3. Change date to date
+4. Select the following columns: Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
+5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical).
+6. Save all four processed datasets in the Processed folder.
+
+```{r}
+#3
+#changing the date to date for all 4 data files
+EPA_O3_2017$Date <- as.Date(EPA_O3_2017$Date, format = "%m/%d/%y")
+EPA_O3_2018$Date <- as.Date(EPA_O3_2018$Date, format = "%m/%d/%y")
+
+EPA_PM25_2017 <- as.Date(EPA_PM25_2017$Date, format = "%m/%d/%y")
+EPA_PM25_2018 <- as.Date(EPA_PM25_2018$Date, format = "%m/%d/%y")
+
+#4
+#selecting Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE
+EPA_O3_2017 <- select(EPA_O3_2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+#selecting columns for EPA ozone data for 2018
+EPA_O3_2018 <- select(EPA_O3_2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+#selecting columns for EPA PM 2.5 2017
+EPA_PM25_2017 <- select(EPA_PM25_2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+#selecting columns for EPA PM 2.5 2018
+EPA_PM25_2018 <- select(EPA_PM25_2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+
+#5
+
+#6
+
+```
+
+
+## Combine datasets
+7. Combine the four datasets with `rbind`. Make sure your column names are identical prior to running this code. 
+8. Wrangle your new dataset with a pipe function (%>%) so that it fills the following conditions: 
+
+* Sites: Blackstone, Bryson City, Castle Hayne, Leggett, Triple Oak
+* Add columns for "Month" and "Year" by parsing your "Date" column (hint: `separate` function or `lubridate` package)
+
+9. Spread your datasets such that AQI values for ozone and PM2.5 are in separate columns. Each location on a specific date should now occupy only one row.
+10. Call up the dimensions of your new tidy dataset.
+11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1718_Processed.csv"
+
+```{r}
+#8
+
+#9
+
+#10
+
+#11
+
+```
+
+
+## Generate summary tables
+12. Use the split-apply-combine strategy to generate two new data frames: 
+a. A summary table of mean AQI values for O3 and PM2.5 by month
+b. A summary table of the mean, minimum, and maximum concentrations of O3 and PM2.5 for each site (AQI values, not concentration values)
+13. Display the data frames.
+
+```{r}
+#12a
+
+#12b
+
+#13
+
+```
+
