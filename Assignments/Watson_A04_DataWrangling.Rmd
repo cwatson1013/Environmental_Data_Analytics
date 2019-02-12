@@ -45,10 +45,10 @@ library(knitr)
 library(kableExtra)
 
 #uploading raw data files for ozone and PM 2.5
-EPA_PM25_2017 <- read.csv("../Data/Raw/EPAair_PM25_NC2017_raw.csv")
-EPA_PM25_2018 <- read.csv("../Data/Raw/EPAair_PM25_NC2018_raw.csv")
-EPA_O3_2017 <- read.csv("../Data/Raw/EPAair_O3_NC2017_raw.csv")
-EPA_O3_2018 <- read.csv("../Data/Raw/EPAair_O3_NC2018_raw.csv")
+EPA_PM25_2017 <- read.csv("./Data/Raw/EPAair_PM25_NC2017_raw.csv")
+EPA_PM25_2018 <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv")
+EPA_O3_2017 <- read.csv("./Data/Raw/EPAair_O3_NC2017_raw.csv")
+EPA_O3_2018 <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv")
 
 #2
 
@@ -120,13 +120,13 @@ EPA_PM25_2017$AQS_PARAMETER_DESC <- c("PM2.5")
 EPA_PM25_2018$AQS_PARAMETER_DESC <- c("PM2.5")
 
 #6 write.csv for all four files
-write.csv(EPA_O3_2017, row.names = FALSE, file = "../Data/Processed/EPA_O3_2017_Processed.csv")
+write.csv(EPA_O3_2017, row.names = FALSE, file = "./Data/Processed/EPA_O3_2017_Processed.csv")
 
-write.csv(EPA_O3_2018, row.names = FALSE, file = "../Data/Processed/EPA_O3_2018_Processed.csv")
+write.csv(EPA_O3_2018, row.names = FALSE, file = "./Data/Processed/EPA_O3_2018_Processed.csv")
 
-write.csv(EPA_PM25_2017, row.names = FALSE, file = "../Data/Processed/EPA_PM25_2017_Processed.csv")
+write.csv(EPA_PM25_2017, row.names = FALSE, file = "./Data/Processed/EPA_PM25_2017_Processed.csv")
 
-write.csv(EPA_PM25_2018, row.names = FALSE, file = "../Data/Processed/EPA_PM25_2018_Processed.csv")
+write.csv(EPA_PM25_2018, row.names = FALSE, file = "./Data/Processed/EPA_PM25_2018_Processed.csv")
 ```
 
 
@@ -144,10 +144,10 @@ write.csv(EPA_PM25_2018, row.names = FALSE, file = "../Data/Processed/EPA_PM25_2
 ```{r}
 #7
 #reading in processed files
-EPA_O3_2017_processed <- read.csv("../Data/Processed/EPA_O3_2017_Processed.csv")
-EPA_O3_2018_processed <- read.csv("../Data/Processed/EPA_O3_2018_Processed.csv")
-EPA_PM25_2017_processed <- read.csv("../Data/Processed/EPA_PM25_2017_Processed.csv")
-EPA_PM25_2018_processed <- read.csv("../Data/Processed/EPA_PM25_2018_Processed.csv")
+EPA_O3_2017_processed <- read.csv("./Data/Processed/EPA_O3_2017_Processed.csv")
+EPA_O3_2018_processed <- read.csv("./Data/Processed/EPA_O3_2018_Processed.csv")
+EPA_PM25_2017_processed <- read.csv("./Data/Processed/EPA_PM25_2017_Processed.csv")
+EPA_PM25_2018_processed <- read.csv("./Data/Processed/EPA_PM25_2018_Processed.csv")
 
 #checking column names of all four datasets
 colnames(EPA_O3_2017_processed)
@@ -175,7 +175,7 @@ EPA_Air_summaries_spread <- spread(EPA_Air_summaries, AQS_PARAMETER_DESC, DAILY_
 dim(EPA_Air_summaries_spread)
 
 #11 saving processed data set with filename:"EPAair_O3_PM25_NC1718_Processed.csv"
-write.csv(EPA_Air_summaries_spread, row.names = FALSE, file = "../Data/Processed/EPAair_O3_PM25_NC1718_Processed.csv")
+write.csv(EPA_Air_summaries_spread, row.names = FALSE, file = "./Data/Processed/EPAair_O3_PM25_NC1718_Processed.csv")
 
 ```
 
@@ -195,9 +195,27 @@ EPA_Air_O3_PM25_mean_AQI <- EPA_Air_summaries_spread %>%
   summarise(mean_O3 = mean(Ozone), 
             mean_PM25 = mean(PM2.5))
 
+EPA_Air_O3_PM25_mean_AQI2 <- EPA_Air_summaries_spread %>%
+  group_by(month) %>%
+  filter(!is.na(Ozone) | !is.na(PM2.5)) %>%
+  summarise(mean_O3 = mean(Ozone), 
+            mean_PM25 = mean(PM2.5))
+
+View(EPA_Air_O3_PM25_mean_AQI2)
+
 #12b
 
 EPA_Air_O3_PM25_summary <- EPA_Air_summaries_spread %>%
+  group_by(Site.Name) %>%
+  filter(!is.na(Ozone) & !is.na(PM2.5)) %>%
+  summarise(mean_O3 = mean(Ozone), 
+            mean_PM2.5 = mean(PM2.5), 
+            min_O3 = min(Ozone),
+            min_PM2.5 = min(PM2.5), 
+            max_O3 = max(Ozone), 
+            max_PM2.5 = max(PM2.5))
+
+EPA_Air_O3_PM25_summary2 <- EPA_Air_summaries_spread %>%
   group_by(Site.Name) %>%
   filter(!is.na(Ozone) & !is.na(PM2.5)) %>%
   summarise(mean_O3 = mean(Ozone), 
@@ -212,6 +230,11 @@ EPA_Air_O3_PM25_summary <- EPA_Air_summaries_spread %>%
 kable(EPA_Air_O3_PM25_mean_AQI) %>%
   kable_styling()
 kable(EPA_Air_O3_PM25_summary) %>%
+  kable_styling()
+
+kable(EPA_Air_O3_PM25_mean_AQI2) %>%
+  kable_styling()
+kable(EPA_Air_O3_PM25_summary2) %>%
   kable_styling()
 
 ```
