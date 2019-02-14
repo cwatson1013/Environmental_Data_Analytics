@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
+author: "Caroline Watson"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -33,9 +33,28 @@ The completed exercise is due on Thursday, 14 February, 2019 before class begins
 2. Make sure R is reading dates as date format, not something else (hint: remember that dates were an issue for the USGS gauge data).
 
 ```{r}
-#1
+#1 
+#viewing working directory
+getwd()
 
-#2
+#loading tidyverse package
+suppressMessages(library(tidyverse))
+
+#reading in data files
+PeterPaul.chem.nutrients.gathered <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+
+PeterPaul.physics <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+
+write.csv(USGS.flow.data.complete, row.names = FALSE, file = "./Data/Processed/USGS_Stream_Flow_Processed.csv")
+
+USGS.flow.data.complete <- read.csv("./Data/Processed/USGS_Stream_Flow_Processed.csv")
+
+ecotox.neonic.data <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
+
+#2 updating the date for each table
+
+
+
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme.
