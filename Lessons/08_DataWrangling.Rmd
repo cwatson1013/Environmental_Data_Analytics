@@ -73,6 +73,11 @@ However, there may be situations where we want to reshape our dataset, for examp
 ```{r}
 # Gather nutrient data into one column - associated with tidyr
 NTL.nutrient.data.PeterPaul.gathered <- gather(NTL.nutrient.data.PeterPaul.skinny, "nutrient", "concentration", tn_ug:po4) #gather last five columns data and put them into the nutrient column and take concentration data and put into one concentration column
+write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE, file = "./Data/Processed/PeterPaul.gathered.processed.csv")
+
+write.csv(USGS.flow.data.complete, row.names = FALSE, file = "./Data/Processed/USGS_Stream_Flow_Processed.csv")
+write.csv(NTL.nutrient.data.PeterPaul.skinny, row.names = FALSE, file = "./Data/Processed/PeterPaul.Nutrient.data.skinny.csv")
+
 NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration))
 count(NTL.nutrient.data.PeterPaul.gathered, nutrient) 
 #this count is false if NAs are included; gather will take the max number of samples to determine the count and will include NAs
