@@ -159,20 +159,24 @@ print(NvsP2)
 # remove your x axis label
 # change labels for nutrients in the legend
 Nutrientplot <-
-  ggplot(PeterPaul.nutrients.gathered, aes(x = lakename, y = concentration, color = nutrient)) +
+  ggplot(PeterPaul.nutrients.gathered, aes(x = lakename, y = concentration, color = nutrient)) + #makes color different with each nutrient category
   geom_boxplot() +
 # place your additional edits here
- ylab(("Concentration (\U003BCg/L)")) +
+ ylab(expression(Concentration~(mu*g/L))) +
   xlab(NULL) + 
   scale_y_continuous(expand = c(0, 0)) +
   #scale_color_brewer(palette = "YlGnBu") +
-  scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), #defining which colors to use in the graphs
-                     name="Nutrient",
-                     breaks=c("nh34", "no23", "po4", "tn_ug", "tp_ug"),
-                     labels=c("Ammonium", "Nitrate", "Phosphorous", "Total N (\U003BCg/L)", "Total P (\U003BCg/L)")) + 
-  #scale_color_viridis(discrete = TRUE) +
-  theme(legend.position = "right", title = "Lake Name")
+  #scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"), #defining which colors to use in the graphs, discrete color choices
+                     #name="Nutrient",
+                     #breaks=c("nh34", "no23", "po4", "tn_ug", "tp_ug"),
+                     #labels=c("Ammonium", "Nitrate", "Phosphorous", "Total N (\U003BCg/L)", "Total P expression(TP~(mu*g/L)")) + 
+  scale_color_viridis(discrete = TRUE,  name="Nutrient",
+                     breaks=c("nh34", "no23", "po4", "tn_ug", "tp_ug"), #if you want this information, make sure it's in the color layer
+                     labels=c("Ammonium", "Nitrate", "Phosphorous", "Total N", "Total P")) #viridis is always continuous color, but if youw want it to be discrete, put discrete = TRUE
+
 print(Nutrientplot)
+
+  #theme(legend.position = "right", title = "Lake Name")
 ```
 
 ### Adjusting facets

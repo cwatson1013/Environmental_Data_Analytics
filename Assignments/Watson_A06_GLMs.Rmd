@@ -1,0 +1,197 @@
+---
+title: "Assignment 6: Generalized Linear Models"
+author: "Caroline Watson"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+## OVERVIEW
+
+This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) on generalized linear models. 
+
+## Directions
+1. Change "Student Name" on line 3 (above) with your name.
+2. Use the lesson as a guide. It contains code that can be modified to complete the assignment.
+3. Work through the steps, **creating code and output** that fulfill each instruction.
+4. Be sure to **answer the questions** in this assignment document.
+Space for your answers is provided in this document and is indicated by the ">" character.
+If you need a second paragraph be sure to start the first line with ">".
+You should notice that the answer is highlighted in green by RStudio. 
+6. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+You will need to have the correct software installed to do this (see Software Installation Guide)
+Press the `Knit` button in the RStudio scripting panel.
+This will save the PDF output in your Assignments folder.
+8. After Knitting, please submit the completed exercise (PDF file) to the dropbox in Sakai. Please add your last name into the file name (e.g., "Salk_A06_GLMs.pdf") prior to submission.
+
+The completed exercise is due on Tuesday, 26 February, 2019 before class begins.
+
+## Set up your session 
+1. Set up your session. Upload the EPA Ecotox dataset for Neonicotinoids and the NTL-LTER raw data file for chemistry/physics. 
+
+2. Build a ggplot theme and set it as your default theme.
+
+```{r}
+#1
+getwd()
+
+suppressMessages(library(tidyverse))
+library(viridis)
+library(gridExtra)
+library(RColorBrewer)
+library(colormap)
+library(dplyr)
+
+#uploading EPA Ecotox dataset
+ecotox.neonic.data <- read.csv("../Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
+
+#fixing format for column headings because they added .. when the data was imported
+colnames(ecotox.neonic.data)[8:12] <- c("Duration", "Conc.Type", "Conc.Mean", "Conc.Units", "Pub.Year")
+
+#uploading NTL-LTER dataset
+ntllter.chem.phys.data <- read.csv("../Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
+#2
+#building ggplot theme and setting it as the default theme
+caroline_theme <- theme_classic(base_size = 16) + 
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+
+theme_set(caroline_theme)
+```
+
+## Neonicotinoids test
+Research question: Were studies on various neonicotinoid chemicals conducted in different years? 
+
+3. Generate a line of code to determine how many different chemicals are listed in the Chemical.Name column.
+
+4. Are the publication years associated with each chemical well-approximated by a normal distribution? Run the appropriate test and also generate a frequency polygon to illustrate the distribution of counts for each year, divided by chemical name. Bonus points if you can generate the results of your test from a pipe function. No need to make this graph pretty.
+
+5. Is there equal variance among the publication years for each chemical? Hint: var.test is not the correct function.
+
+```{r}
+#3 seeing how many chemicals there are in the chemical name column
+summary(ecotox.neonic.data$Chemical.Name)
+
+#4 #turn data into vector within pipe because otherwise shapiro test doens't like it
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Acetamiprid"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Clothianidin"]) 
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Dinotefuran"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Imidacloprid"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Imidaclothiz"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Nitenpyram"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Nithiazine"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Thiacloprid"])
+shapiro.test(ecotox.neonic.data$Pub.Year[ecotox.neonic.data$Chemical.Name == "Thiamethoxam"])
+
+#frequency polygon
+freq_pub_chem_plot <- ggplot(ecotox.neonic.data, mapping = aes(x = Pub.Year, color = Chemical.Name)) +
+  geom_freqpoly(stat = "count")
+print(freq_pub_chem_plot)
+  
+#5
+#testing if variances are equal among each chemical
+bartlett.test(ecotox.neonic.data$Pub.Year ~ ecotox.neonic.data$Chemical.Name)
+
+```
+
+6. Based on your results, which test would you choose to run to answer your research question?
+
+> ANSWER: The variances are not equal, so we would want to run a non-parametric test for a one-way ANOVA and that woudl be a Kruskal-Wallis test.  
+
+7. Run this test below. 
+
+8. Generate a boxplot representing the range of publication years for each chemical. Adjust your graph to make it pretty.
+```{r}
+#7
+#nonparametric Kruskal-Wallis test
+pubyear.chem.kw <- kruskal.test(ecotox.neonic.data$Pub.Year ~ ecotox.neonic.data$Chemical.Name)
+pubyear.chem.kw
+
+#8
+#boxplot of publication years for each chemical
+pub_chem_boxplot <- ggplot(ecotox.neonic.data, aes(x = Chemical.Name, y = Pub.Year, color = Chemical.Name)) + 
+  geom_boxplot() +
+  labs(x = "Chemical Name", y = "Publication Year", 
+       color = "Chemical Name") +
+  scale_color_brewer(palette = "Paired") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+print(pub_chem_boxplot)
+
+```
+
+
+9. How would you summarize the conclusion of your analysis? Include a sentence summarizing your findings and include the results of your test in parentheses at the end of the sentence. 
+
+> ANSWER: There is a significant difference between publication year and chemical name (Kruskall-Wallis test; df = 8, chi-squared = 134.2, p < 0.0001).
+
+## NTL-LTER test
+Research question: What is the best set of predictors for lake temperatures in July across the monitoring period at the North Temperate Lakes LTER? 
+
+11. Wrangle your NTL-LTER dataset with a pipe function so that it contains only the following criteria: 
+
+* Only dates in July (hint: use the daynum column). No need to consider leap years.
+* Only the columns: lakename, year4, daynum, depth, temperature_C
+* Only complete cases (i.e., remove NAs)
+
+12. Run an AIC to determine what set of explanatory variables (year4, daynum, depth) is best suited to predict temperature. Run a multiple regression on the recommended set of variables. 
+
+```{r}
+#11
+#wrangling data to only include dates in July, only columns are lakename, year4, daynum, depth, temperature_C, and remove NAs
+
+ntller.chem.phys.data.processed <- ntllter.chem.phys.data %>%
+  filter(daynum >= 182 & daynum <= 212) %>%
+  select(lakename:daynum, depth,temperature_C) %>%
+  na.omit()
+
+#12
+#running linear model 
+yearAIC <- lm(data = ntller.chem.phys.data.processed, temperature_C ~ year4 + 
+daynum + depth)
+summary(yearAIC)
+
+#running AIC with step model 
+step(yearAIC)
+
+#running a multiple regression on the full model again
+yearAIC_rerun <- lm(data = ntller.chem.phys.data.processed, temperature_C ~ year4 + 
+daynum + depth)
+summary(yearAIC)
+```
+
+13. What is the final linear equation to predict temperature from your multiple regression? How much of the observed variance does this model explain?
+
+> ANSWER: The full original model has the smallest AIC, thus whe would accept this model. The full model explains 74% of the variance. 
+
+14. Run an interaction effects ANCOVA to predict temperature based on depth and lakename from the same wrangled dataset.
+
+```{r}
+#14
+#interaction effects ANOVA 
+temp.anova <- lm(data = ntller.chem.phys.data.processed, temperature_C ~ depth*lakename)
+summary(temp.anova)
+
+```
+
+15. Is there an interaction between depth and lakename? How much variance in the temperature observations does this explain?
+
+> ANSWER: There is an interaction between depth and lakename. 79% of the variance is explained in the temperature observations.
+
+16. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
+
+```{r}
+#16
+
+temp.by.depth <- ggplot(ntller.chem.phys.data.processed, aes(x = depth, y = temperature_C, color = lakename)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Depth (m)", y = "Temperature (C)", color = "Lake Name") +
+  scale_color_brewer(palette = "Paired") +
+  ylim(0, 35)
+#change colors, change legen label name, put in indiviual codes/numbers
+print(temp.by.depth)
+
+```
+
