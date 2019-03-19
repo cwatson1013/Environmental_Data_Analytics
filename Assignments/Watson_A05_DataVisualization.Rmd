@@ -122,6 +122,16 @@ ggplot(subset(PeterPaul.nutrients.gathered, lakename = "Peter Lake"),
   facet_wrap(vars(nutrient)) +
   theme(axis.text.x = element_text(size = 11))
 
+ggplot(subset(PeterPaul.nutrients.gathered, lakename = "Peter Lake"), 
+       aes(x = nutrient, y = sampledate, color = depth)) +
+  geom_point() +
+  labs(x = "Nutrient", y = "Date", color = "Depth") +
+  scale_color_viridis(option = "viridis", direction = -1) +
+  facet_wrap(vars(nutrient)) +
+  theme(axis.text.x = element_text(size = 11))
+
+
+
 ```
 
 

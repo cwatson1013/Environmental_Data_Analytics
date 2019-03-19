@@ -1,0 +1,242 @@
+---
+title: "Assignment 8: Time Series Analysis"
+author: "Caroline Watson"
+output: pdf_document
+geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, warning=FALSE, message=FALSE}
+```
+## OVERVIEW
+
+This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) on time series analysis.
+
+## Directions
+1. Change "Student Name" on line 3 (above) with your name.
+2. Use the lesson as a guide. It contains code that can be modified to complete the assignment.
+3. Work through the steps, **creating code and output** that fulfill each instruction.
+4. Be sure to **answer the questions** in this assignment document.
+Space for your answers is provided in this document and is indicated by the ">" character.
+If you need a second paragraph be sure to start the first line with ">".
+You should notice that the answer is highlighted in green by RStudio. 
+6. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+You will need to have the correct software installed to do this (see Software Installation Guide)
+Press the `Knit` button in the RStudio scripting panel.
+This will save the PDF output in your Assignments folder.
+8. After Knitting, please submit the completed exercise (PDF file) to the dropbox in Sakai. Please add your last name into the file name (e.g., "Salk_A08_TimeSeries.pdf") prior to submission.
+
+The completed exercise is due on Tuesday, 19 March, 2019 before class begins.
+
+## Brainstorm a project topic
+1. Spend 15 minutes brainstorming ideas for a project topic, and look for a dataset if you are choosing your own rather than using a class dataset. Remember your topic choices are due by the end of March, and you should post your choice ASAP to the forum on Sakai.
+
+Question: Did you do this?
+
+> ANSWER: Yes and I posted my research question and dataset to the forum on Sakai. 
+
+## Set up your session 
+2. Set up your session. Upload the EPA air quality raw dataset for PM2.5 in 2018, and the processed NTL-LTER dataset for nutrients in Peter and Paul lakes. Build a ggplot theme and set it as your default theme. Make sure date variables are set to a date format.
+
+```{r}
+getwd()
+
+suppressMessages(library(tidyverse))
+library(viridis)
+library(gridExtra)
+library(RColorBrewer)
+library(colormap)
+library(dplyr)
+library(lubridate)
+library(nlme)
+library(lsmeans)
+library(multcompView)
+library(trend)
+
+#uploading EPA Air Quality raw data for PM2.5 in 2018
+epa_air2018 <- read.csv("../Data/Raw/EPAair_PM25_NC2018_raw.csv")
+
+#uploading NTL-LTER processed data set for nutrients in Peter and Paul Lakes
+nutrients_peterpaul <- read.csv("../Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+
+#creating ggplot theme
+caroline_theme <- theme_classic(base_size = 16) + 
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+
+theme_set(caroline_theme)
+
+#checking date classes in datasets
+class(epa_air2018$Date)
+class(nutrients_peterpaul$sampledate)
+
+#changing date column to date format
+epa_air2018$Date <- as.Date(epa_air2018$Date, format = "%m/%d/%y")
+
+nutrients_peterpaul$sampledate <- as.Date(nutrients_peterpaul$sampledate, format = "%Y-%m-%d")
+```
+
+
+## Run a hierarchical (mixed-effects) model
+
+Research question: Do PM2.5 concentrations have a significant trend in 2018?
+
+3. Run a repeated measures ANOVA, with PM2.5 concentrations as the response, Date as a fixed effect, and Site.Name as a random effect. This will allow us to extrapolate PM2.5 concentrations across North Carolina.
+
+3a. Illustrate PM2.5 concentrations by date. Do not split aesthetics by site.
+
+```{r, fig.width=12, fig.height=8}
+#renaming PM concentration column
+colnames(epa_air2018)[5] <- c("PM2.5")
+
+#remove NAs from dataset
+epa_airwrangled <- epa_air2018 %>%
+  na.exclude()
+
+#3a. repeated measures ANOVA
+epaAirTest_mixed <- lme(data = epa_airwrangled,
+                          PM2.5 ~ Date,
+                        random = ~1|Site.Name)
+summary(epaAirTest_mixed)
+
+#illustrate repeated measures ANOVA
+ggplot(epa_airwrangled, aes(x = Date, y = PM2.5)) +
+  geom_point(color = "dark blue", alpha = 0.5) +
+  labs(x = "Date", y = "Mean PM 2.5 Concentration (micrograms/m^3)") +
+  geom_smooth(method = "lm", color = "black")
+
+```
+
+3b. Insert the following line of code into your R chunk. This will eliminate duplicate measurements on single dates for each site.
+PM2.5 = PM2.5[order(PM2.5[,'Date'],-PM2.5[,'Site.ID']),]
+PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
+
+3c. Determine the temporal autocorrelation in your model. 
+
+3d. Run a mixed effects model. 
+
+```{r}
+
+#3b. inserting chunk to get rid of duplicate measurements on a single date
+epa_airwrangled2 = epa_airwrangled[order(epa_airwrangled[,'Date'],-epa_airwrangled[,'Site.ID']),]
+epa_airwrangled2 = epa_airwrangled2[!duplicated(epa_airwrangled2$Date),]
+
+#3c. temporal autocorrelation
+epaAirTest_mixed2 <- lme(data = epa_airwrangled2,
+                          PM2.5 ~ Date,
+                        random = ~1|Site.Name)
+summary(epaAirTest_mixed)
+
+ACF(epaAirTest_mixed2)
+
+#3d. Mixed effects model
+epa.air.mixed <- lme(data = epa_airwrangled2,
+                     PM2.5 ~ Date, 
+                     random = ~1|Site.Name,
+                     correlation = corAR1(form = ~ Date|Site.Name, value = 0.515),
+                     method = "REML") 
+
+summary(epa.air.mixed)
+
+```
+
+Is there a significant increasing or decreasing trend in PM2.5 concentrations in 2018? 
+
+> ANSWER: The trend is decreaseing because the slope is negative. The p-value is greater than 0.05, so the trend is not significant for PM2.5 concentrations in 2018.
+
+3e. Run a fixed effects model with Date as the only explanatory variable. Then test whether the mixed effects model is a better fit than the fixed effect model. 
+
+```{r}
+#3e. fixed effects model
+epa_air_fixed <- gls(data = epa_airwrangled2, 
+                     PM2.5 ~ Date)
+
+summary(epa_air_fixed)
+
+#comparing the mixed effects and fixed effects model 
+anova(epa_air_fixed, epa.air.mixed)
+
+```
+
+
+Which model is better?
+
+> ANSWER: The mixed effect model is better because the AIC score is lower than the AIC score for the fixed effect model.
+
+
+## Run a Mann-Kendall test
+
+Research question: Is there a trend in total N surface concentrations in Peter and Paul lakes? 
+
+4. Duplicate the Mann-Kendall test we ran for total P in class, this time with total N for both lakes. Make sure to run a test for changepoints in the datasets (and run a second one if a second change point is likely). 
+
+```{r}
+# Wrangle our dataset
+Nutrients.peterpaul.surface <- 
+  nutrients_peterpaul %>%
+  select(-lakeid, -depth_id, -comments) %>%
+  filter(depth == 0) %>%
+  filter(!is.na(tn_ug))
+
+#splitting lake data up into each lake
+Nutrients.peter.surface <- filter(Nutrients.peterpaul.surface, lakename == "Peter Lake")
+
+Nutrients.paul.surface <- filter(Nutrients.peterpaul.surface, lakename == "Paul Lake")
+
+#Mann-Kendall test for total N in Peter and Paul lakes
+mk.test(Nutrients.peter.surface$tn_ug) 
+mk.test(Nutrients.paul.surface$tn_ug)
+
+#running a Pettitt test to see if there is a change point
+pettitt.test(Nutrients.peter.surface$tn_ug) #changepoint for Peter lake is noted at row 36
+pettitt.test(Nutrients.paul.surface$tn_ug) #change point noted at 16 for Paul Lake
+
+#running another Mann-Kendall test before and after change point for Peter Lake
+mk.test(Nutrients.peter.surface$tn_ug[1:35]) #p-value close to 1 and
+#negative z score, so no trend detected
+mk.test(Nutrients.peter.surface$tn_ug[36:98]) #p-value smaller than one 
+#above with a positive z score, so trend is not significant
+
+#running another Mann-Kendall test before and after change point for Paul Lake
+mk.test(Nutrients.paul.surface$tn_ug[1:15]) #low p-value and negative z score, so 
+mk.test(Nutrients.paul.surface$tn_ug[16:99]) #p-value greater than 
+#0.05 and positive z score, so we accept the null that the data come
+#from a population of independent realizations
+
+#testing to see if there is a changepoint since last section has a small p-value
+pettitt.test(Nutrients.peter.surface$tn_ug[36:98]) #changepoint at 21+36 = 57 
+#because p-value from this test is low
+pettitt.test(Nutrients.paul.surface$tn_ug[16:99]) #changepoint at 36+16 = 52
+
+#Mann-Kendall test for second change point
+mk.test(Nutrients.peter.surface$tn_ug[36:56]) #not a significant trend from 1993 - 1997
+mk.test(Nutrients.peter.surface$tn_ug[57:98]) #also no significant trend
+
+mk.test(Nutrients.paul.surface$tn_ug[16:51]) #no significant trend
+mk.test(Nutrients.paul.surface$tn_ug[52:99]) #no siginificant trend
+
+```
+
+
+What are the results of this test?
+
+> ANSWER: The results of this test shows that there is a change point at row 16 and row 52 for Paul lake and row 36 and 52 for Peter lake. This indicates that there is an increasing and then decreasing and then increasing trend in the total N concentration in Peter and Paul lakes over time. 
+
+5. Generate a graph that illustrates the TN concentrations over time, coloring by lake and adding vertical line(s) representing changepoint(s).
+
+```{r}
+#graph of TN concentration over time
+ggplot(Nutrients.peterpaul.surface, aes(x = sampledate, y = tn_ug, color = lakename)) + 
+  geom_point() +
+  labs(x = "Date", y = "Total N Concentration (micrograms/L)", color = "Lake Name") +
+  scale_color_manual(values = c("#7fcdbb", "#253494")) +
+  geom_vline(xintercept = as.Date("1993-06-02"), color="#253494", lty = 2) +  #Peter 
+  #Lake changepoint at 36
+  geom_vline(xintercept = as.Date("1991-09-02"), color="#7fcdbb", lty = 2) + #Paul Lake at 16
+ geom_vline(xintercept = as.Date("1994-05-26"), color="#7fcdbb", lty = 2) + #Paul Lake at 52
+ geom_vline(xintercept = as.Date("1994-06-29"), color="#253494", lty = 2)  #Peter 
+#Lake changepoint at 57
+
+```
+
